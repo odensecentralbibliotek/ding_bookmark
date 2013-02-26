@@ -239,6 +239,8 @@ function ding_bookmark_flag_confirm_form_callback($form, &$form_state) {
   $html = '<div class="ding-bookmark-message">' . $form_state['storage']['response_html'] . '</div>';
   // Popup.
   $response['#commands'][] = ajax_command_ding_popup('ding_bookmark', t('Bookmark'), $html);
+  //update amount. Remember to add .amount div { display: inline} in your theme because ajax_command_html adds divs.
+  $response['#commands'][] = ajax_command_html('#ding-user-bookmark-amount .amount', '(' . ding_bookmark_count_number() . ')');
 
   return $response;
 }
