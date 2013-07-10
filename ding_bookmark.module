@@ -239,6 +239,8 @@ function ding_bookmark_flag_confirm_form_callback($form, &$form_state) {
   $html = '<div class="ding-bookmark-message">' . $form_state['storage']['response_html'] . '</div>';
   // Popup.
   $response['#commands'][] = ajax_command_ding_popup('ding_bookmark', t('Bookmark'), $html);
+  $response['#commands'][] = ajax_command_append('.ding-bookmark-message',
+      '<div><button class="btn message-btn" onclick="window.location.reload(true)">' . t("Ok") . '</button></div>');
 
   return $response;
 }
