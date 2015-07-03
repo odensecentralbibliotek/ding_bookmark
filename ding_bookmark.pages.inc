@@ -143,7 +143,7 @@ function theme_ding_bookmark_remove_form($variables) {
     $output .= theme('table', array(
       'header' => $header ,
       'rows' => $rows,
-      'attributes' => array('width' => 'auto'),
+      'attributes' => array('width' => 'auto','class' => array('tablesorter')),
     ));
 
     // Render all remaining elements.
