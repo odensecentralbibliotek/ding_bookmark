@@ -89,6 +89,7 @@ function theme_ding_bookmark_remove_form($variables) {
 
   // Add 'select all' checkbox.
   drupal_add_js('misc/tableselect.js');
+  drupal_add_css(drupal_get_path('theme', 'latto_odense') .'/css/oc_tablesort.css');
   $header = array(
     array('class' => array('select-all')),
     array('data' => t('Title'), 'class' => array('title')),
