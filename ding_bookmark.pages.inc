@@ -91,8 +91,8 @@ function theme_ding_bookmark_remove_form($variables) {
   drupal_add_js('misc/tableselect.js');
   $header = array(
     array('class' => array('select-all')),
-    array('data' => t('Title'), 'class' => 'title'),
-    '',
+    array('data' => t('Title'), 'class' => array('title')),
+    array('data' => '','class' => array('{sorter: false}')),
   );
   
   // Add classes to table header columns.
@@ -139,7 +139,6 @@ function theme_ding_bookmark_remove_form($variables) {
 
 
   if (count($rows)) {
-
     $output .= theme('table', array(
       'header' => $header ,
       'rows' => $rows,
