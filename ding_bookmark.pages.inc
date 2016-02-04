@@ -138,7 +138,13 @@ function theme_ding_bookmark_remove_form($variables) {
     }
   }
 
-
+    /*
+    * Add JS
+    */
+    $form['#attached']['js'] = array(
+     drupal_get_path('module', 'ding_bookmark') . '/js/ding_bookmark_attached.js',
+   );
+    
   if (count($rows)) {
     $output .= theme('table', array(
       'header' => $header ,
@@ -149,7 +155,7 @@ function theme_ding_bookmark_remove_form($variables) {
     // Render all remaining elements.
     $output .= drupal_render_children($form);
   }
-
+ 
   return $output;
 }
 
