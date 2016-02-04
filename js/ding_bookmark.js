@@ -1,5 +1,12 @@
 (function($) {
-
+    jQuery( document ).ready(function() {
+        $('a:contains("Fjern fra huskelisten")').on('click',function(){
+            jQuery('<div class="search-overlay--wrapper"><div class="search-overlay--inner"><i class="icon-spinner icon-spin search-overlay--icon"></i><p class="search-overlay--text">' + Drupal.t('Sletter...') + '</p><p class="cancel"><a href="#">' + Drupal.t('Luk') + '</a></p></div></div>').prependTo('body');
+        });
+        $('.edit-submit').on('click',function(){
+            jQuery('<div class="search-overlay--wrapper"><div class="search-overlay--inner"><i class="icon-spinner icon-spin search-overlay--icon"></i><p class="search-overlay--text">' + Drupal.t('Sletter...') + '</p><p class="cancel"><a href="#">' + Drupal.t('Luk') + '</a></p></div></div>').prependTo('body');
+        });
+    });
   Drupal.behaviors.bookmarkSubmit = {
       attach:function(context, settings) {
           $('.ding-bookmark-reservation-button', context).click(function() {
