@@ -10,13 +10,13 @@
  */
 function ding_bookmark_user_bookmark_page($account) {
   $content_ids = flag_load('bookmark')->get_user_content_ids($account->uid);
-
+  drupal_add_js( drupal_get_path('module', 'ding_bookmark') . '/js/ding_bookmark_attached.js' );
   if ($content_ids) {
     $bookmark_form = drupal_get_form('ding_bookmark_remove_form', $content_ids);
     // render reservation buttons outside bookmark form, so it's valid XHTML
     $reservation_forms = ding_bookmark_reservation_forms($content_ids);
     drupal_add_js( drupal_get_path('module', 'ding_bookmark') . '/js/ding_bookmark.js' );
-    drupal_add_js( drupal_get_path('module', 'ding_bookmark') . '/js/ding_bookmark_attached.js' );
+    
     drupal_add_css(drupal_get_path('module', 'ding_bookmark') . '/css/ding_bookmark.css' );
     
     if (!empty($bookmark_form)) {
