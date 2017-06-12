@@ -9,6 +9,7 @@
  * Menu callback; Display user bookmark items.
  */
 function ding_bookmark_user_bookmark_page($account) {
+  set_time_limit(0); // pople are crazy and have long lists.
   $content_ids = flag_load('bookmark')->get_user_content_ids($account->uid);
   drupal_add_js( drupal_get_path('module', 'ding_bookmark') . '/js/ding_bookmark_attached.js' );
   if ($content_ids) {
