@@ -179,9 +179,10 @@ function ding_bookmark_form_flag_confirm_alter(&$form, &$form_state, $form_id) {
     // Custom submit handler will show login popup to user instead of "You are not allowed to flag...".
     $form['#native_submit'] = $form['#submit'];
     $form['#submit'] = array('ding_bookmark_form_flag_confirm_submit');
-
+    $form['actions']['submit']['#id'] = "bookmark-btn";
     // Implement ajax functionality.
     $form['actions']['submit']['#ajax'] = array(
+      '#id' => "bookmark-btn",
       'callback' => 'ding_bookmark_flag_confirm_form_callback',
       'wrapper' => 'ding-bookmark-flag-confirm-form',
     );
@@ -201,27 +202,73 @@ function ding_bookmark_form_flag_confirm_submit($form, &$form_state) {
 
   // Popup login form.
   if (!$user->uid) {
-    throw new DingProviderAuthException;
-    return;
+    //form_set_error($form, 'please login to bookmark');
+    //get login form.
+        $state = form_state_defaults();
+        $elements = drupal_get_form("user_login");
+        /*
+         * Add a material id hidden input for use later if login succeeds.
+         */
+        
+        unset($elements['name']['#value']);
+        unset($elements['pass']['#value']);
+        $elements['actions']['submit']['#ajax']['callback'] = "ding_bookmark_flag_confirm_form_callback";
+        //unset($elements['actions']['submit']['#ajax_processed']);
+        //$elements['actions']['submit'] = ajax_pre_render_element($elements['actions']['submit']);
+        $elements['content_id'] = array(
+            '#id' => 'content_id',
+            '#name' => 'content_id',
+            '#type' => 'hidden',
+            '#value' => $form['content_id']['#value'],
+          );
+        $elements['material_id'] = array(
+            '#id' => 'material_id',
+            '#name' => 'material_id',
+            '#type' => 'hidden',
+            '#value' => $form['material_id']['#value'],
+          );
+        if(isset($form['is_carousel']))
+        {
+            $elements['is_carousel'] = array(
+                '#id' => 'is_carousel',
+                '#name' => 'is_carousel',
+                '#type' => 'hidden',
+                '#value' => true,
+              );
+        }
+        form_set_cache($elements['#build_id'], $elements,$state);
+        $form_html = render($elements);
+        
+        
+        $commands = array(
+          '#type' => 'ajax',
+          '#commands' => array(
+             //ajax_command_html('.modal-body',$form_html),
+             ajax_command_ding_popup('ding_bookmark', t('Huskeliste'), $form_html)
+          ));
+        ajax_deliver($commands);
+        drupal_exit();
   }
+ if(isset($form['content_id']['#value']))
+ {
+    $bookmark_flag = flag_get_flag('bookmark');
+    $entity_id = $form['content_id']['#value'];
 
-  $bookmark_flag = flag_get_flag('bookmark');
-  $entity_id = $form['content_id']['#value'];
-
-  if ($bookmark_flag->is_flagged($entity_id)) {
-    // Generate message for the user.
-    $form_state['storage']['response_html'] = t($bookmark_flag->flagged_already_message);
-  }
-  else {
-    // Invoke native submit handlers.
-    foreach ($form['#native_submit'] as $function) {
-      if (function_exists($function)) {
-        $function($form, $form_state);
-      }
+    if ($bookmark_flag->is_flagged($entity_id)) {
+      // Generate message for the user.
+      $form_state['storage']['response_html'] = t($bookmark_flag->flagged_already_message);
     }
-    // Generate message for the user.
-    $form_state['storage']['response_html'] = t($bookmark_flag->flag_message);
-  }
+    else {
+      // Invoke native submit handlers.
+      foreach ($form['#native_submit'] as $function) {
+        if (function_exists($function)) {
+          $function($form, $form_state);
+        }
+      }
+      // Generate message for the user.
+      $form_state['storage']['response_html'] = t($bookmark_flag->flag_message);
+    }
+ }
 }
 
 /**
@@ -234,11 +281,41 @@ function ding_bookmark_flag_confirm_form_callback($form, &$form_state) {
   );
 
   // Drop messages.
-  theme('status_messages');
+  //theme('status_messages');
   // Get generated message.
+  //ding_bookmark_form_flag_confirm_submit($form,$form_state);
   $html = '<div class="ding-bookmark-message">' . $form_state['storage']['response_html'] . '</div>';
+   if(isset($form['is_carousel']))
+   {
+        $object = ding_entity_load($form['material_id']['#value'], 'ting_object');  
+        unset($_POST); // conflicts..
+        $render = ting_object_view($object, 'caroussel_modal');
+       foreach($render['ding_entity_buttons'][0] as $index => $button)
+       {
+            $render['ding_entity_buttons'][0][$index]['is_carousel'] = array(
+                '#id' => 'is_carousel',
+                '#name' => 'is_carousel',
+                '#type' => 'hidden',
+                '#value' => true,
+              );
+            form_set_cache($button['#build_id'], $render['ding_entity_buttons'][0][$index],$state);
+       }
+      $render_result =  render($render);
+      $html .= $render_result;
+   }
   // Popup.
-  $response['#commands'][] = ajax_command_ding_popup('ding_bookmark', t('Bookmark'), $html);
+  //$response['#commands'][] = ajax_command_html('.modal-body', $html);
+  $my_page_button = '<span class="text-top-menu login-topmenu grow"><i class="far fa-user-circle fa-lg"></i> Min Side</span>';
+  
+  $response['#commands'][] = ajax_command_replace(".modallogin", $my_page_button);
+  if(isset($form['is_carousel']) && $form['is_carousel']['#value'] == 1)
+  {
+    $response['#commands'][] = ajax_command_html('.modal-body', $html);
+  }
+  else
+  {
+      $response['#commands'][] = ajax_command_ding_popup('ding_bookmark', t('Huskeliste'), $html);
+  }
   //update amount..
   $response['#commands'][] = ajax_command_html('#ding-user-bookmark-amount .amount', '<span>(' . ding_bookmark_count_number() . ')</span>');
 
@@ -259,6 +336,12 @@ function ding_bookmark_flag_view($entity_type, $entity) {
   // Store native title.
   $page_native_title = drupal_get_title();
   $flag_confirm_form = ding_provider_get_form('flag_confirm', 'flag', $bookmark_flag, $entity_id);
+  $flag_confirm_form['material_id'] = array(
+            '#id' => 'material_id',
+            '#name' => 'material_id',
+            '#type' => 'hidden',
+            '#value' => $entity->id,
+          );
   // Restore title.
   drupal_set_title($page_native_title);
 
