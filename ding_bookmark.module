@@ -179,10 +179,9 @@ function ding_bookmark_form_flag_confirm_alter(&$form, &$form_state, $form_id) {
     // Custom submit handler will show login popup to user instead of "You are not allowed to flag...".
     $form['#native_submit'] = $form['#submit'];
     $form['#submit'] = array('ding_bookmark_form_flag_confirm_submit');
-    $form['actions']['submit']['#id'] = "bookmark-btn";
+    $form['actions']['submit']['#id'] = drupal_html_id("bookmark-btn");
     // Implement ajax functionality.
     $form['actions']['submit']['#ajax'] = array(
-      '#id' => "bookmark-btn",
       'callback' => 'ding_bookmark_flag_confirm_form_callback',
       'wrapper' => 'ding-bookmark-flag-confirm-form',
     );
