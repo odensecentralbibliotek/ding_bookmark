@@ -234,16 +234,24 @@ function ding_bookmark_form_flag_confirm_submit($form, &$form_state) {
                 '#type' => 'hidden',
                 '#value' => true,
               );
+             $elements['is_carousel_login'] = array(
+                '#id' => 'is_carousel_login',
+                '#name' => 'is_carousel_login',
+                '#type' => 'hidden',
+                '#value' => true,
+              );
+             
         }
+        
         form_set_cache($elements['#build_id'], $elements,$state);
         $form_html = render($elements);
         
-        
+        $command = isset($form['is_carousel']) ? ajax_command_html('.modal-body',$form_html) : ajax_command_ding_popup('ding_bookmark', t('Huskeliste'), $form_html);
         $commands = array(
           '#type' => 'ajax',
           '#commands' => array(
-             //ajax_command_html('.modal-body',$form_html),
-             ajax_command_ding_popup('ding_bookmark', t('Huskeliste'), $form_html)
+             $command,
+             
           ));
         ajax_deliver($commands);
         drupal_exit();
@@ -265,7 +273,7 @@ function ding_bookmark_form_flag_confirm_submit($form, &$form_state) {
         }
       }
       // Generate message for the user.
-      $form_state['storage']['response_html'] = t($bookmark_flag->flag_message);
+      //$form_state['storage']['response_html'] = t($bookmark_flag->flag_message);
     }
  }
 }
@@ -282,9 +290,14 @@ function ding_bookmark_flag_confirm_form_callback($form, &$form_state) {
   // Drop messages.
   //theme('status_messages');
   // Get generated message.
-  //ding_bookmark_form_flag_confirm_submit($form,$form_state);
+  if($form['is_carousel_login'])
+  {
+    ding_bookmark_form_flag_confirm_submit($form,$form_state);
+  }
+  //drupal_get_messages('status',true);
   drupal_set_message($form_state['storage']['response_html']);
   $html = theme('status_messages');
+  
   //$html = '<div class="ding-bookmark-message">' .  . '</div>';
    if(isset($form['is_carousel']))
    {
