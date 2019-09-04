@@ -234,15 +234,15 @@ function ding_bookmark_form_flag_confirm_submit($form, &$form_state) {
                 '#type' => 'hidden',
                 '#value' => true,
               );
-             $elements['is_carousel_login'] = array(
+             
+             
+        }
+        $elements['is_carousel_login'] = array(
                 '#id' => 'is_carousel_login',
                 '#name' => 'is_carousel_login',
                 '#type' => 'hidden',
                 '#value' => true,
               );
-             
-        }
-        
         form_set_cache($elements['#build_id'], $elements,$state);
         $form_html = render($elements);
         
