@@ -319,9 +319,9 @@ function ding_bookmark_flag_confirm_form_callback($form, &$form_state) {
    }
   // Popup.
   //$response['#commands'][] = ajax_command_html('.modal-body', $html);
-  $my_page_button = '<span class="text-top-menu login-topmenu grow"><i class="far fa-user-circle fa-lg"></i> Min Side</span>';
-  
-  $response['#commands'][] = ajax_command_replace(".modallogin", $my_page_button);
+ 
+  $top_menu = theme('fynboots_top_menu');
+  $response['#commands'][] = ajax_command_replace(".top-menu", $top_menu);
   if(isset($form['is_carousel']) && $form['is_carousel']['#value'] == 1)
   {
     $response['#commands'][] = ajax_command_html('.modal-body', $html);
