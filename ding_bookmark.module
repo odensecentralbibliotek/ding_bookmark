@@ -267,16 +267,22 @@ function ding_bookmark_form_flag_confirm_submit($form, &$form_state) {
     }
     else {
       // Invoke native submit handlers.
+      $was_handled = false;
       foreach ($form['#native_submit'] as $function) {
         if (function_exists($function)) {
+            $was_handled = true;
           $function($form, $form_state);
         }
       }
       // Generate message for the user.
-      //$form_state['storage']['response_html'] = t($bookmark_flag->flag_message);
+        if(!$was_handled)
+        {
+          $form_state['storage']['response_html'] = t($bookmark_flag->flag_message);
+        }
+      }
     }
  }
-}
+
 
 /**
  * Ajax callback.
@@ -292,6 +298,7 @@ function ding_bookmark_flag_confirm_form_callback($form, &$form_state) {
   // Get generated message.
   if($form['is_carousel_login'])
   {
+    $form['#native_submit'] = ["flag_confirm_submit"];
     ding_bookmark_form_flag_confirm_submit($form,$form_state);
   }
   //drupal_get_messages('status',true);
