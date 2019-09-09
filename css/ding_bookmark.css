@@ -1,3 +1,8 @@
 .ding-entity-button-reserve input[type='submit'] {
   display: none;
 }
+#ding-bookmark-remove-form div table .obb-carousel-material-placeholder
+{
+    float:left;
+    margin-right: 8px;
+}
