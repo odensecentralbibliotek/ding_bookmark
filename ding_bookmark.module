@@ -234,9 +234,21 @@ function ding_bookmark_form_flag_confirm_submit($form, &$form_state) {
                 '#type' => 'hidden',
                 '#value' => true,
               );
-             
+              
              
         }
+        $elements['action'] = array(
+                '#id' => 'action',
+                '#name' => 'action',
+                '#type' => 'hidden',
+                '#value' => $form_state['values']['action'],
+              );
+            $elements['flag_name'] = array(
+                '#id' => 'flag_name',
+                '#name' => 'flag_name',
+                '#type' => 'hidden',
+                '#value' => $form_state['values']['flag_name'],
+              );     
         $elements['is_carousel_login'] = array(
                 '#id' => 'is_carousel_login',
                 '#name' => 'is_carousel_login',
