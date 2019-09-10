@@ -5,4 +5,7 @@
 {
     float:left;
     margin-right: 8px;
+    width: 80px !important;
+    height: 124px !important;
+    overflow: hidden;
 }
