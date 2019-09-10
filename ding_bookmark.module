@@ -211,6 +211,12 @@ function ding_bookmark_form_flag_confirm_submit($form, &$form_state) {
         
         unset($elements['name']['#value']);
         unset($elements['pass']['#value']);
+        unset($elements['name']['#description']);
+        $elements['pass']['#type'] = 'textfield';
+        $elements['pass']['#theme'] = 'textfield';
+        $elements['name']['#attributes']['placeholder'] = t('Cpr- eller kortnummer:');
+        $elements['pass']['#attributes']['placeholder'] = t('Adgangskode:');
+        
         $elements['actions']['submit']['#ajax']['callback'] = "ding_bookmark_flag_confirm_form_callback";
         //unset($elements['actions']['submit']['#ajax_processed']);
         //$elements['actions']['submit'] = ajax_pre_render_element($elements['actions']['submit']);
