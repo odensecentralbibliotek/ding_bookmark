@@ -264,7 +264,7 @@ function ding_bookmark_form_flag_confirm_submit($form, &$form_state) {
         form_set_cache($elements['#build_id'], $elements,$state);
         $form_html = render($elements);
         
-        $command = isset($form['is_carousel']) ? ajax_command_html('#obb-material-modal .modal-body',$form_html) : ajax_command_ding_popup('ding_bookmark', t('Huskeliste'), $form_html);
+        $command = isset($form['is_carousel']) ? ajax_command_ding_popup('ding_carousel_popup', t('Information'),$form_html) : ajax_command_ding_popup('ding_bookmark', t('Huskeliste'), $form_html);
         $commands = array(
           '#type' => 'ajax',
           '#commands' => array(
@@ -349,7 +349,8 @@ function ding_bookmark_flag_confirm_form_callback($form, &$form_state) {
   $response['#commands'][] = ajax_command_replace(".top-menu", $top_menu);
   if(isset($form['is_carousel']) && $form['is_carousel']['#value'] == 1)
   {
-    $response['#commands'][] = ajax_command_html('.modal-body', $html);
+    //$response['#commands'][] = ajax_command_html('.modal-body', $html);
+      $response['#commands'][] = ajax_command_ding_popup('ding_carousel_popup', t('Information'),$html);
   }
   else
   {
