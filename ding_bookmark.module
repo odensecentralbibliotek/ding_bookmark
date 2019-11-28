@@ -11,17 +11,17 @@ module_load_include('inc', 'ding_bookmark', 'ding_bookmark.flag_ding_entity');
  * Implements hook_menu().
  */
 function ding_bookmark_menu() {
-  $items['user/%user/bookmarks'] = array(
+ /* $items['user/%user/bookmarks'] = array(
     'title' => 'Bookmarks',
     'title arguments' => array('Bookmarks', 1),
-    'page callback' => 'ding_bookmark_user_bookmark_page',
+    //'page callback' => '',
     'page arguments' => array(1),
     'access callback' => 'ding_bookmark_view_access',
     'access arguments' => array(1),
     'type' => MENU_LOCAL_TASK,
     'file' => 'ding_bookmark.pages.inc',
   );
-  return $items;
+  return $items;*/
 }
 
 /**
