@@ -1,0 +1,140 @@
+<?php
+define("DING_MATERIALIST_SERVICE_URL","https://prod.materiallist.dandigbib.org");
+define("DING_MATERIALIST_TEST_SERVICE_URL","https://test.materiallist.dandigbib.org");
+define("DING_MATERIALLIST_MATERIAL_LIST_ID",'default');
+/**
+ * Implements hook_init().
+ *
+ * Register autoloader for our (non-Drupal) classes.
+ */
+use Swagger\Client\materiallistapi\ListApi;
+
+function ding_materiallist_service_init() {
+    require_once dirname(__FILE__) . "/SwaggerClient-php/autoload.php";
+  }
+function ding_materiallist_service_get_list()
+{
+  module_load_include('inc', 'obb_bib_login', 'obb_bib_login.class');
+  if($token = biblogin::isloggedin())
+  {
+    $client = new ListApi();
+    $client->getConfig()->setAccessToken($token->token)->setHost(DING_MATERIALIST_TEST_SERVICE_URL);
+
+    $list = $client->getList('default');
+    /*
+    * Sync the list with flag module.
+    */
+    $bookmark_flag = flag_get_flag('bookmark');
+    foreach($list as $material)
+    {
+      //get the id and check if flagged.
+      if (!$bookmark_flag->is_flagged($entity_id)) {
+        //we found an item that is not on our own list.
+      }
+    }
+    return $list;
+  }
+  else
+  {
+    return null;
+  }
+
+}
+function ding_materiallist_service_add_to_list($materialid)
+{
+  module_load_include('inc', 'obb_bib_login', 'obb_bib_login.class');
+  if($token = biblogin::isloggedin())
+  {
+    $client = new ListApi();
+    $client->getConfig()->setAccessToken($token->token)->setHost(DING_MATERIALIST_TEST_SERVICE_URL);
+    $result = $client->addListMaterial(DING_MATERIALLIST_MATERIAL_LIST_ID,$materialid);
+  }
+  else
+  {
+    return null;
+  }
+}
+function ding_materiallist_service_remove_from_list()
+{
+  module_load_include('inc', 'obb_bib_login', 'obb_bib_login.class');
+  if($token = biblogin::isloggedin())
+  {
+    $client = new ListApi();
+    $client->getConfig()->setAccessToken($token->token)->setHost(DING_MATERIALIST_TEST_SERVICE_URL);
+    $result = $client>deleteListMaterial(DING_MATERIALLIST_MATERIAL_LIST_ID,$materialid);
+  }
+  else
+  {
+    return null;
+  }
+}
+function ding_materiallist_service_sync_from_list()
+{
+  module_load_include('inc', 'obb_bib_login', 'obb_bib_login.class');
+  if($token = biblogin::isloggedin())
+  {
+    
+  }
+  else
+  {
+    return null;
+  }
+}
+function ding_materiallist_service_sync_to_list()
+{
+  module_load_include('inc', 'obb_bib_login', 'obb_bib_login.class');
+  if($token = biblogin::isloggedin())
+  {
+    
+  }
+  else
+  {
+    return null;
+  }
+}
+function ding_materiallist_service_test()
+{
+  module_load_include('inc', 'obb_bib_login', 'obb_bib_login.class');
+    $login_handler = new biblogin();
+    $login_handler->setClientId('84eda1fa-c66f-413a-95aa-c7f6ab72f353');
+    $login_handler->setEndpoint('https://login.bib.dk/oauth/token');
+    if(($token = $login_handler->isloggedin()) == null)
+    {
+      $token = $login_handler->getToken('1801872049','4321','DK-746100');
+    }
+   
+    $client = new ListApi(null,$config,null);
+    $client->getConfig()->setAccessToken($token)->setHost(DING_MATERIALIST_TEST_SERVICE_URL);
+
+    //$result = $client->addListMaterial('default','870970-basis:54172613');
+
+    $list = $client->getList('default');
+    $data = $list->getMaterials();
+    foreach($data as $material)
+    {
+      echo $material;
+    }
+    return;
+}
+/*
+* They do not use the open platform login service directly. 
+*/
+
+function biblogin_get_token()
+{
+
+}
+/**
+ * Implements hook_menu().
+ */
+function ding_materiallist_service_menu() {
+     $items['materiallist/test'] = array(
+       'title' => 'test',
+       'page callback' => 'ding_materiallist_service_test',
+       'type' => MENU_CALLBACK,
+       'access arguments' => array(
+        'access content',
+      ),
+     );
+     return $items;
+   }
