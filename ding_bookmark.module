@@ -198,7 +198,19 @@ function ding_bookmark_form_flag_confirm_alter(&$form, &$form_state, $form_id) {
  */
 function ding_bookmark_form_flag_confirm_submit($form, &$form_state) {
   global $user;
-
+  $biblogin = null;
+  if(module_exists('obb_bib_login'))
+  {
+    module_load_include('inc', 'obb_bib_login', 'bib.login.class');
+    if(biblogin::isloggedin())
+    {
+      $user->uid = null; // token has expired..we need to login again.
+    }
+    else
+    {
+      $biblogin = new biblogin();
+    }
+  }
   // Popup login form.
   if (!$user->uid) {
     //form_set_error($form, 'please login to bookmark');
@@ -290,6 +302,13 @@ function ding_bookmark_form_flag_confirm_submit($form, &$form_state) {
         if (function_exists($function)) {
             $was_handled = true;
           $function($form, $form_state);
+
+          //If success , then add to the materiallist service aswell.
+          if(module_exists('obb_bib_login'))
+          {
+            module_invoke('ding_materiallist_service','add_to_list',$entity_id);
+          }
+
         }
       }
       // Generate message for the user.
