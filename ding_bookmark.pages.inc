@@ -10,6 +10,27 @@
  */
 function ding_bookmark_user_bookmark_page($account) {
   set_time_limit(0); // pople are crazy and have long lists.
+
+  //Get the material list service list.
+  if(module_exists('obb_bib_login'))
+  {
+    
+    $materialList = module_invoke('ding_materiallist_service','get_list');
+    /*
+    * Sync the list with flag module.
+    */
+    $bookmark_flag = flag_get_flag('bookmark');
+    foreach($materialList as $material)
+    {
+      //get the id and check if flagged.
+      $ding_entity = ding_entity_load($material);
+      if (!$bookmark_flag->is_flagged($ding_entity->vid)) {
+        //we found an item that is not on our own list.
+        $bookmark_flag->flag('flag',$ding_entity->vid);
+      }
+    }
+  }
+
   $content_ids = flag_load('bookmark')->get_user_content_ids($account->uid);
   drupal_add_js( drupal_get_path('module', 'ding_bookmark') . '/js/ding_bookmark_attached.js' );
   if ($content_ids) {
@@ -81,7 +102,22 @@ function ding_bookmark_remove_form_submit($form, &$form_state) {
     // Unflag all selected items.
     $flag = flag_get_flag('bookmark');
     foreach ($items_to_delete as $item_wid) {
+      $entity = ding_entity_load($item_wid);
       $flag->flag('unflag', $item_wid);
+      //If success , then add to the materiallist service aswell.
+      if(module_exists('obb_bib_login'))
+      {
+        $result = db_select('ting_object', 'o')
+          ->fields('o',array('ding_entity_id'))
+          ->condition('vid', $item_wid,'=')
+          ->execute()
+          ->fetchAssoc();
+        foreach($result as $material)
+        {
+          module_invoke('ding_materiallist_service','delete_from_list',$material);
+        }
+       
+      }
     }
   }
 }
