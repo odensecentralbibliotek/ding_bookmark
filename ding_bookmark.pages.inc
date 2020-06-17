@@ -102,7 +102,8 @@ function ding_bookmark_remove_form_submit($form, &$form_state) {
     // Unflag all selected items.
     $flag = flag_get_flag('bookmark');
     foreach ($items_to_delete as $item_wid) {
-      $entity = ding_entity_load($item_wid);
+      
+
       $flag->flag('unflag', $item_wid);
       //If success , then add to the materiallist service aswell.
       if(module_exists('obb_bib_login'))
@@ -112,6 +113,7 @@ function ding_bookmark_remove_form_submit($form, &$form_state) {
           ->condition('vid', $item_wid,'=')
           ->execute()
           ->fetchAssoc();
+          
         foreach($result as $material)
         {
           module_invoke('ding_materiallist_service','delete_from_list',$material);
